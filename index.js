@@ -2,6 +2,7 @@
 const fs = require("fs-extra")
 const path = require("path")
 const inquirer = require("inquirer")
+const exec = require("child_process").exec
 
 require("colors")
 
@@ -41,17 +42,19 @@ const cwd = process.cwd()
       if (fs.statSync(path.join(cwd, name)).isDirectory()) {
         const newTemplate = await replacePlaceholders(template, name)
 
-        createVhost(newTemplate, name)
+        await createVhost(newTemplate, name)
       }
     }
+
+    exec("service nginx restart")
   })
 })()
 
-const createVhost = (template, name) => {
+const createVhost = async (template, name) => {
   const vhostFile = "/" + path.join("etc", "nginx", "sites-available", name)
   fs.writeFile(vhostFile, template, err => {
     if (err) throw err
-    console.log(`Created vHost ${name}`.green)
+    console.log(`\nCreated vHost ${name}`.green)
     fs.symlink(
       vhostFile,
       "/" + path.join("etc", "nginx", "sites-enabled", name),
