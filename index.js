@@ -58,12 +58,12 @@ const cwd = process.cwd()
 const createVhost = async (template, name) => {
   const vhostFile = "/" + path.join("etc", "nginx", "sites-available", name)
   fs.writeFileSync(vhostFile, template)
-  console.log(`\nCreated vHost ${name}`.green)
+  console.log(`Created vHost ${name}`.green)
   fs.symlinkSync(
     vhostFile,
     "/" + path.join("etc", "nginx", "sites-enabled", name)
   )
-  console.log(`Created symlink for vHost ${name}`.green)
+  console.log(`Created symlink for vHost ${name}\n`.green)
 }
 
 const replacePlaceholders = async (template, name) => {
