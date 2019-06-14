@@ -10,7 +10,7 @@ const cwd = process.cwd()
     {
       type: "input",
       name: "templatePath",
-      default: "/etc/nginx/sites-available/template",
+      default: "/etc/nginx/template",
       message: "Enter a template file path: ",
     },
   ])
