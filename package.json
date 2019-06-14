@@ -9,5 +9,8 @@
   "dependencies": {
     "fs-extra": "^8.0.1",
     "inquirer": "^6.3.1"
+  },
+  "bin": {
+    "update-vhosts": "index.js"
   }
 }
