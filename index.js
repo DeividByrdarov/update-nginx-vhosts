@@ -30,9 +30,9 @@ const cwd = process.cwd()
       return
     }
 
-    const files = fs.readdirSync(directory)
+    const hostFiles = fs.readdirSync(directory)
 
-    for (const file of files) {
+    for (const file of hostFiles) {
       if (file === "default") {
         console.log("Skipped deleting default vHost".green)
         continue
