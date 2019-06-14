@@ -37,10 +37,9 @@ const cwd = process.cwd()
         console.log("Skipped deleting default vHost".green)
         continue
       }
-      console.log(`Deleting ${file}`)
-      // fs.unlink(path.join(directory, file), err => {
-      //   if (err) throw err
-      // })
+      fs.unlink(path.join(directory, file), err => {
+        if (err) throw err
+      })
     }
 
     for (let name of files) {
