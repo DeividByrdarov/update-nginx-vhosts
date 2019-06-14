@@ -46,7 +46,12 @@ const cwd = process.cwd()
       }
     }
 
-    exec("service nginx restart")
+    console.log("Restarting Nginx...".yellow)
+    exec("service nginx restart", err => {
+      if (err) throw err
+
+      console.log("Nginx restarted... Go check your new HOSTS 😉".green)
+    })
   })
 })()
 
