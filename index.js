@@ -2,6 +2,7 @@
 const fs = require("fs-extra")
 const path = require("path")
 const inquirer = require("inquirer")
+const colors = require("colors")
 
 const cwd = process.cwd()
 ;(async () => {
@@ -18,11 +19,30 @@ const cwd = process.cwd()
   fs.readFile(templatePath, "utf8", async (err, template) => {
     if (err) {
       if (err.code === "ENOENT") {
-        console.log("File not found!")
+        console.log("File not found!".red)
         return
       }
       throw err
     }
+    const directory = "/etc/nginx/sites-available"
+    if (!fs.existsSync(directory)) {
+      console.log("Nginx has not been installed.".red)
+      return
+    }
+
+    const files = fs.readdirSync(directory)
+
+    for (const file of files) {
+      if (file === "default") {
+        console.log("Skipped deleting default vHost".green)
+        continue
+      }
+      console.log(`Deleting ${file}`)
+      // fs.unlink(path.join(directory, file), err => {
+      //   if (err) throw err
+      // })
+    }
+
     for (let name of files) {
       if (fs.statSync(path.join(cwd, name)).isDirectory()) {
         const { indexFile } = await inquirer.prompt([
