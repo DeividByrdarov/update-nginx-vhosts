@@ -69,6 +69,8 @@ const selectFolderForVhost = async () => {
     const newTemplate = await replacePlaceholders(template, name)
 
     await createVhost(newTemplate, name)
+
+    restartNginx()
   })
 }
 
@@ -107,7 +109,7 @@ const updateAllVhosts = async () => {
       return
     }
 
-    if (deleteHosts) {
+    if (deleteVhosts) {
       const availableDirectory =
         "/" + path.join("etc", "nginx", "sites-available")
       const enabledDirectory = "/" + path.join("etc", "nginx", "sites-enabled")
@@ -124,12 +126,16 @@ const updateAllVhosts = async () => {
       }
     }
 
-    console.log("Restarting Nginx...".yellow)
-    exec("service nginx restart", err => {
-      if (err) throw err
+    restartNginx()
+  })
+}
 
-      console.log("Nginx restarted... Go check your new HOSTS 😉".green)
-    })
+const restartNginx = () => {
+  console.log("Restarting Nginx...".yellow)
+  exec("service nginx restart", err => {
+    if (err) throw err
+
+    console.log("Nginx restarted... Go check your new HOSTS 😉".green)
   })
 }
 
