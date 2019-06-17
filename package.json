@@ -1,9 +1,10 @@
 {
   "name": "update-vhosts",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "node ."
+    "start": "ts-node .",
+    "build": "tsc -p ."
   },
   "license": "MIT",
   "dependencies": {
@@ -12,6 +13,14 @@
     "inquirer": "^6.3.1"
   },
   "bin": {
-    "update-vhosts": "index.js"
+    "update-vhosts": "./lib/index.js"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^7.0.0",
+    "@types/inquirer": "^6.0.3",
+    "@types/node": "^12.0.8",
+    "nodemon": "^1.19.1",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.2"
   }
 }

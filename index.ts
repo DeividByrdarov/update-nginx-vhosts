@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-const fs = require("fs-extra")
-const path = require("path")
-const inquirer = require("inquirer")
-const exec = require("child_process").exec
-
-require("colors")
+import "colors"
+import fs from "fs-extra"
+import path from "path"
+import inquirer from "inquirer"
+import { exec } from "child_process"
 
 const cwd = process.cwd()
 
-const SELECTIONS = {
+const SELECTIONS: { [key: string]: string } = {
   ALL_FOLDERS: "Get all folders from current directory as vHosts",
   CHOOSE_FOLDER: "Choose folder to add as vHost",
 }
@@ -46,7 +45,7 @@ const selectFolderForVhost = async () => {
     }
   }
 
-  const { name } = await inquirer.prompt([
+  const { name } = await inquirer.prompt<{ name: string }>([
     {
       type: "list",
       name: "name",
@@ -75,7 +74,7 @@ const selectFolderForVhost = async () => {
 }
 
 const askForTemplate = async () =>
-  await inquirer.prompt([
+  await inquirer.prompt<{ templatePath: string }>([
     {
       type: "input",
       name: "templatePath",
@@ -150,7 +149,7 @@ const nginxInstalled = () => {
   return 1
 }
 
-const createVhost = async (template, name) => {
+const createVhost = async (template: string, name: string) => {
   if (!nginxInstalled()) {
     return
   }
@@ -165,8 +164,8 @@ const createVhost = async (template, name) => {
   console.log(`Created symlink for vHost ${name}\n`.green)
 }
 
-const replacePlaceholders = async (template, name) => {
-  const { indexFile } = await inquirer.prompt([
+const replacePlaceholders = async (template: string, name: string) => {
+  const { indexFile } = await inquirer.prompt<{ indexFile: string }>([
     {
       type: "input",
       name: "indexFile",
@@ -185,7 +184,7 @@ const replacePlaceholders = async (template, name) => {
   return newTemplate
 }
 
-const deleteHosts = directory => {
+const deleteHosts = (directory: string) => {
   const hostFiles = fs.readdirSync(directory)
 
   for (const file of hostFiles) {
