@@ -8,6 +8,7 @@ import { exec } from "child_process"
 const cwd = process.cwd()
 
 const SELECTIONS: { [key: string]: string } = {
+  NODEJS_APP: "Add a NodeJS application as vHost",
   ALL_FOLDERS: "Get all folders from current directory as vHosts",
   CHOOSE_FOLDER: "Choose folder to add as vHost",
 }
@@ -29,9 +30,40 @@ const main = async () => {
     case SELECTIONS.CHOOSE_FOLDER:
       selectFolderForVhost()
       break
+    case SELECTIONS.NODEJS_APP:
+      addNodeJSApp()
+      break
     default:
       console.log("Something went wrong".red)
       break
+  }
+}
+
+const addNodeJSApp = async () => {
+  try {
+    const template = await fs.readFile("./templates/nodejs-template", "utf8")
+    const { name, port } = await inquirer.prompt([
+      {
+        type: "input",
+        message:
+          "Enter full subdomain of the project (example: test.example.com)",
+        name: "name",
+      },
+      {
+        type: "input",
+        message: "Enter the port of the running app",
+        name: "port",
+      },
+    ])
+
+    let newTemplate = "" + template
+
+    newTemplate = newTemplate.split("$!{name}").join(name)
+    newTemplate = newTemplate.split("$!{port}").join(port)
+
+    createVhost(newTemplate, name)
+  } catch (error) {
+    console.log(error)
   }
 }
 
