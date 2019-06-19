@@ -65,6 +65,8 @@ const addNodeJSApp = async () => {
     newTemplate = newTemplate.split("$!{port}").join(port)
 
     createVhost(newTemplate, name)
+
+    restartNginx()
   } catch (error) {
     console.log(error)
   }
