@@ -4,6 +4,7 @@ import fs from "fs-extra"
 import path from "path"
 import inquirer from "inquirer"
 import { exec } from "child_process"
+import { updateAllVhosts, selectFolderForVhost, addNodeJSApp } from "./actions"
 
 const cwd = process.cwd()
 
@@ -39,77 +40,6 @@ const main = async () => {
   }
 }
 
-const addNodeJSApp = async () => {
-  try {
-    const template = await fs.readFile(
-      path.join(__dirname, "templates", "nodejs-template"),
-      "utf8"
-    )
-    const { name, port } = await inquirer.prompt([
-      {
-        type: "input",
-        message:
-          "Enter full subdomain of the project (example: test.example.com)",
-        name: "name",
-      },
-      {
-        type: "input",
-        message: "Enter the port of the running app",
-        name: "port",
-      },
-    ])
-
-    let newTemplate = "" + template
-
-    newTemplate = newTemplate.split("$!{name}").join(name)
-    newTemplate = newTemplate.split("$!{port}").join(port)
-
-    createVhost(newTemplate, name)
-
-    restartNginx()
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-const selectFolderForVhost = async () => {
-  const files = await fs.readdir(cwd)
-  const choices = []
-
-  for (const file of files) {
-    if (fs.statSync(path.join(cwd, file)).isDirectory()) {
-      choices.push(file)
-    }
-  }
-
-  const { name } = await inquirer.prompt<{ name: string }>([
-    {
-      type: "list",
-      name: "name",
-      message: "Select project that you want to add to vHosts",
-      choices,
-    },
-  ])
-
-  const { templatePath } = await askForTemplate()
-
-  fs.readFile(templatePath, "utf8", async (err, template) => {
-    if (err) {
-      if (err.code === "ENOENT") {
-        console.log("\nFile not found!\n".red)
-        return
-      }
-      throw err
-    }
-
-    const newTemplate = await replacePlaceholders(template, name)
-
-    await createVhost(newTemplate, name)
-
-    restartNginx()
-  })
-}
-
 const askForTemplate = async () =>
   await inquirer.prompt<{ templatePath: string }>([
     {
@@ -119,52 +49,6 @@ const askForTemplate = async () =>
       message: "Enter a template file path: ",
     },
   ])
-
-const updateAllVhosts = async () => {
-  const { templatePath } = await askForTemplate()
-  const { deleteVhosts } = await inquirer.prompt([
-    {
-      type: "confirm",
-      name: "deleteVhosts",
-      message: "Should we delete all vHosts except the default one?",
-      default: true,
-    },
-  ])
-
-  const files = await fs.readdir(cwd)
-  fs.readFile(templatePath, "utf8", async (err, template) => {
-    if (err) {
-      if (err.code === "ENOENT") {
-        console.log("\nFile not found!\n".red)
-        return
-      }
-      throw err
-    }
-
-    if (!nginxInstalled()) {
-      return
-    }
-
-    if (deleteVhosts) {
-      const availableDirectory =
-        "/" + path.join("etc", "nginx", "sites-available")
-      const enabledDirectory = "/" + path.join("etc", "nginx", "sites-enabled")
-
-      deleteHosts(availableDirectory)
-      deleteHosts(enabledDirectory)
-    }
-
-    for (let name of files) {
-      if (fs.statSync(path.join(cwd, name)).isDirectory()) {
-        const newTemplate = await replacePlaceholders(template, name)
-
-        await createVhost(newTemplate, name)
-      }
-    }
-
-    restartNginx()
-  })
-}
 
 const restartNginx = () => {
   console.log("Restarting Nginx...".yellow)
