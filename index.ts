@@ -41,7 +41,10 @@ const main = async () => {
 
 const addNodeJSApp = async () => {
   try {
-    const template = await fs.readFile("./templates/nodejs-template", "utf8")
+    const template = await fs.readFile(
+      path.join(__dirname, "templates", "nodejs-template"),
+      "utf8"
+    )
     const { name, port } = await inquirer.prompt([
       {
         type: "input",
