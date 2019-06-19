@@ -4,7 +4,8 @@
   "main": "index.ts",
   "scripts": {
     "start": "ts-node .",
-    "build": "tsc -p ."
+    "build": "tsc -p . && npm run copy-static-files",
+    "copy-static-files": "rm -rf lib/templates && cp -r templates lib"
   },
   "license": "MIT",
   "dependencies": {
